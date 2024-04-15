@@ -1,11 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STEM Library Project</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UnQUESTables</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <button onclick="generateToken()">Click Me to Generate Token</button>
+    <button onclick="getBookings()">Click me to Fetch Bookings</button>
+  </body>
 </html>
+
+<script>
+  let accessToken = null;
+
+  // Displays hello word
+  function myFunction() {
+    alert("Hello World!");
+    console.log("hello");
+  }
+
+  // Attempt to generate an API access token
+  async function generateToken() {
+    console.log("generateToken() called");
+
+    // Payload for fetch request
+    const payload = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_id: "1494",
+        client_secret: "5aea4983508270cca9d102a3880d02d0",
+        grant_type: "client_credentials",
+      }),
+    };
+
+    // Try fetching token
+    try {
+      const response = await fetch(
+        "https://umd.libcal.com/1.1/oauth/token",
+        payload
+      );
+      const data = await response.json();
+      token = data.access_token; // Store the token or pass to another function
+      accessToken = token;
+      console.log("Data from token:", data);
+      return token;
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  // Attempt to fetch bookings
+  async function getBookings() {
+    console.log("getBookings() called");
+
+    if (accessToken == null) {
+      console.error("Error: accessToken is null");
+      return;
+    }
+
+    const payload = {
+      method: "GET",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    };
+
+    // Try fetching token
+    //https://umd.libcal.com/1.1/events/bookings
+    try {
+      const response = await fetch(
+        "https://umd.libcal.com/1.1/space/bookings?lid=6745",
+        payload
+      );
+      const data = await response.json();
+      console.log("Data from token:", data);
+      return token;
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+</script>
