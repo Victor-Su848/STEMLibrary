@@ -15,10 +15,10 @@ SAMPLE_SPREADSHEET_ID = "1fcHo9-2NILQKgcZwq4E3txrUlHgc70etIFMELHJR498"
 # SAMPLE_RANGE_NAME = "Class Data!A2:E"
 SAMPLE_RANGE_NAME = "Completed Instruction!C2:G"
 
-def main():
-  """Shows basic usage of the Sheets API.
-  Prints values from a sample spreadsheet.
-  """
+emails = []
+values = []
+
+def prep_emails():
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
   # created automatically when the authorization flow completes for the first
@@ -54,14 +54,36 @@ def main():
       print("No data found.")
       return
 
-    print("Name, Major:")
+    # add each email in spreadsheet to whole list to search through
     for row in values:
       # Print columns A and E, which correspond to indices 0 and 4.
       #print(f"{row[0]}, {row[4]}")
-      print(f"{row}")
+      emails.append(f"{row[0]}")
+
   except HttpError as err:
     print(err)
 
 
+def check_training(email, equipment):
+    if (values and emails):
+      found_rows = []
+      for index, item in enumerate(emails):
+        if (item.find(email) != -1):
+          found_rows.append(index)
+    
+      # if email was found in the list, go through and look at the equipment
+      trained = 0
+      if (len(found_rows)):
+        for row in found_rows:
+          print(values[row][4])
+          if (values[row][4].lower().find(equipment) != -1):
+            trained = 1
+      return trained
+    else:
+      prep_emails()
+    
+  
+
+
 if __name__ == "__main__":
-  main()
+  check_training("vsu@", "3D")

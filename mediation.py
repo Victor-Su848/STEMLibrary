@@ -7,6 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 
+from quickstart import prep_emails
+from quickstart import check_training
+
+
 # Start a new Chrome browser session
 driver = webdriver.Chrome()
 
@@ -14,6 +18,7 @@ driver = webdriver.Chrome()
 driver.get("https://umd.libcal.com/admin/spaces/mediation?lid=6745#s-lc-tab-mediation")
 
 try:
+    prep_emails()
     # Wait for the username and password fields to be present
     username_field = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "s-libapps-email"))
@@ -64,70 +69,42 @@ try:
             trained = 0
             if (equipment.find("3D") != -1):
                 print("3D Printer")
+                trained = check_training(email, "3d")
             elif (equipment.find("AR") != -1):
                 print("AR Sandbox")
+                trained = check_training(email, "ar")
             elif (equipment.find("Laser") != -1):
                 print("Laser Cutter")
+                trained = check_training(email, "laser")
             elif (equipment.find("Vinyl") != -1):
                 print("Vinyl Cutter")
+                trained = check_training(email, "vinyl")
             else:
                 print("Error")
             print(row_data, email)
             if (trained):
                 driver.get(row_data[0])
-            
-                
 
+                # now in tab to approve the booking
+                text_area = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "internal_note"))
+                )
+
+                text_area = driver.find_element(By.ID, "internal_note")
+                text_area.send_keys("Automatically approved booking")
+
+                # Wait for the button to be clickable
+                approve_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "appb"))
+                )
+    
+                # Click the button
+                approve_button.click()
+            else:
+                print("not trained")
+                 
     sleep(30)
-
 
 finally:
     # Close the browser
     driver.quit()
-
-
-
-# Old code before updating url
-#   spaces_button = WebDriverWait(driver, 10).until(
-#         EC.element_to_be_clickable((By.ID, "s-lc-app-menu-spaces"))
-#     )
-    
-#     # Click the button
-#     spaces_button.click()
-
-#     dropdown = WebDriverWait(driver, 10).until(
-#         EC.element_to_be_clickable((By.XPATH, "//*[@aria-owns[contains(., 'bs-select-1')]]"))
-#     )
-
-#     # Open the dropdown
-#     dropdown.click()
-
-#     stemlib_button = WebDriverWait(driver, 10).until(
-#         EC.element_to_be_clickable((By.ID, "bs-select-1-3"))
-#     )
-    
-#     # Click the button
-#     stemlib_button.click()
-
-#     mediation_tab = WebDriverWait(driver, 10).until(
-#         EC.element_to_be_clickable((By.ID, "s-lc-tab-mediation"))
-#     )
-    
-#     # Click the button
-#     mediation_tab.click()
-
-
-#     # Find the table element by its ID
-#     #table = driver.find_element_by_id("medrtb")
-#     table = WebDriverWait(driver, 10).until(
-#         EC.element_to_be_clickable((By.ID, "medrtb"))
-#     )
-
-#     table = driver.find_element_by_id("medrtb")
-
-#     # Iterate over each row in the table
-#     for row in table.find_elements_by_tag_name("tr"):
-#         # Extract data from each cell in the row
-#         cells = row.find_elements_by_tag_name("th") + row.find_elements_by_tag_name("td")
-#         row_data = [cell.text for cell in cells]
-#         print(row_data)
