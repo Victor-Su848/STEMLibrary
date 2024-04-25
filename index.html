@@ -81,7 +81,7 @@
     // status: will be "Mediated Tentative" when not yet approved / denied
     try {
       const response = await fetch(
-        "https://umd.libcal.com/1.1/space/bookings?lid=6745&cid=31707&days=20&limit=500&include_cancel=0",
+        "https://umd.libcal.com/1.1/space/bookings?lid=6745&cid=31707&days=20&limit=500&include_cancel=0&formAnswers=1",
         payload
       );
       const data = await response.json();
