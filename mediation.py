@@ -45,7 +45,7 @@ async def main():
         table = driver.find_element(By.ID, "medrtb")
 
         # Go through each of the bookings in the table and process the row
-        for row in table.find_elements(By.TAG_NAME, "tr"):
+        for row in reversed(table.find_elements(By.TAG_NAME, "tr")):
             await process_row(row, driver)
                  
         sleep(30)
