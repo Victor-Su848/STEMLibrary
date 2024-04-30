@@ -10,6 +10,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from time import sleep
 from quickstart import prep_emails
 from quickstart import check_training
+from variables import *
 
 async def main():
     # Get all of the emails from the Google spreadsheet before moving on
@@ -29,8 +30,10 @@ async def main():
         password_field = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "s-libapps-password"))
         )
-        username_field.send_keys("lib-makerspace@umd.edu")
-        password_field.send_keys("JohnAndStella1!")
+        #print("username:", username)
+        #print("password:", password)
+        username_field.send_keys(username)
+        password_field.send_keys(password)
     
         # Wait for the button to be clickable, then click button
         submit_button = WebDriverWait(driver, 10).until(
