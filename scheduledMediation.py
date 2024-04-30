@@ -3,8 +3,7 @@ import asyncio
 import schedule
 import time
 import sys
-print("Python executable:", sys.executable)
-
+import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -37,13 +36,13 @@ async def main():
         username_field.send_keys(username)
         password_field.send_keys(password)
     
-        # Wait for the button to be clickable, then click button
+        # Wait for the button to be clickable, then click the button
         submit_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, "s-libapps-login-button"))
         )
         submit_button.click()
 
-        # Now on mediation tab
+        # Now on the mediation tab
         # Wait for the table to be present and find the table element by its ID
         table = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, "medrtb"))
@@ -63,9 +62,6 @@ async def main():
         # Close the browser
         driver.quit()
 
-
-
-# Processes the booking in the row
 async def process_row(row, driver):
     # Extract data from each cell in the row
     cells = row.find_elements(By.TAG_NAME, "td")
@@ -118,4 +114,21 @@ async def process_row(row, driver):
         else:
             print("not trained")
 
-asyncio.run(main())
+def run_async_main():
+    log_filename = "mediation_log.txt"
+    try:
+        asyncio.run(main())
+        with open(log_filename, "a") as file:
+            file.write(f"{datetime.datetime.now()}: Successfully completed.\n")
+    except Exception as e:
+        with open(log_filename, "a") as file:
+            file.write(f"{datetime.datetime.now()}: Failed to run to completion. Error: {str(e)}\n")
+
+# Schedule the run_async_main to run every 2 minutes
+schedule.every(2).minutes.do(run_async_main)
+
+print("Python executable:", sys.executable)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
