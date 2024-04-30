@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from time import sleep
 from quickstart import prep_emails
 from quickstart import check_training
@@ -46,7 +47,10 @@ async def main():
 
         # Go through each of the bookings in the table and process the row
         for row in reversed(table.find_elements(By.TAG_NAME, "tr")):
-            await process_row(row, driver)
+            try:
+                await process_row(row, driver)
+            except StaleElementReferenceException:
+                print("stale element exception handled")
                  
         sleep(30)
 
@@ -65,7 +69,7 @@ async def process_row(row, driver):
         try:
             row_data = row_data + [cell.find_element(By.TAG_NAME, "a").get_attribute("href")]
         except NoSuchElementException:
-            print("handled")
+            print("no such element exception handled")
 
     # if a link was found in the row data, follow it after checking email
     if len(row_data): 
