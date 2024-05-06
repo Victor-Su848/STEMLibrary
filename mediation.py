@@ -46,8 +46,15 @@ async def main():
         table = driver.find_element(By.ID, "medrtb")
 
         # Go through each of the bookings in the table and process the row
-        for row in reversed(table.find_elements(By.TAG_NAME, "tr")):
+        # need to 
+        num_rows = len(table.find_elements(By.TAG_NAME, "tr"))
+        for i in range(num_rows):
             try:
+                table = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, "medrtb"))
+                )
+                table = driver.find_element(By.ID, "medrtb")
+                row = table.find_elements(By.TAG_NAME, "tr").pop(num_rows - i - 1)
                 await process_row(row, driver)
             except StaleElementReferenceException:
                 print("stale element exception handled")
